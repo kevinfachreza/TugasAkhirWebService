@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Diagnosis;
 use App\Models\DiagnosisGejala;
 use App\Models\Gejala;
+use App\Models\Kasus;
+
 use DB;
 
 class DashboardController extends Controller
@@ -26,6 +28,7 @@ class DashboardController extends Controller
 
 	public function diagnosisgejala(){
 		$data['diagnosis'] = Diagnosis::all();
+		$data['diagnosis'] = Kasus::all();
 		return view('dashboard.diagnosisgejala',$data);
 	}
 }
