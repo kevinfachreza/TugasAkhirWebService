@@ -41,3 +41,4 @@ Route::get('/kasus/new/{id}','Kasus\PostController@create');
 Route::get('/kasus/{id}','Kasus\ViewController@single');
 Route::get('/kasus/{id}/delete','Kasus\PostController@delete');
 Route::post('/kasus/edit/diagnosis','Kasus\PostController@editDiagnosis');
+Route::post('/kasus/edit/sumber','Kasus\PostController@editSumber');

@@ -3,14 +3,13 @@
 @section('content')
 
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-md-8">
 		<div class="card">
 			<div class="card-header card-header-icon" data-background-color="purple">
 				<i class="material-icons">assignment</i>
 			</div>
 			<div class="card-content">
 				<h4 class="card-title">Pilih Diagnosis
-					<a href="{{url()->current()}}/new" class="btn btn-primary pull-right">Buat Baru</a>
 				</h4>
 				<div class="toolbar">
 					

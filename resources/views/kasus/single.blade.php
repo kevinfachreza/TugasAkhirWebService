@@ -25,6 +25,23 @@
 			</div>
 			<!-- end content-->
 		</div>
+
+
+		<div class="card">
+			<div class="card-header card-header-icon" data-background-color="purple">
+				<i class="material-icons">add</i>
+			</div>
+			<div class="card-content">
+				<h4 class="card-title">Sumber</h4>
+				<form method="POST" action="{{url('')}}/kasus/edit/sumber" style="padding:20px">
+					{{csrf_field()}}
+					<input type="text" name="kasus_id" value="{{$kasus->id}}" style="display: none">
+					<input type="text" class="form-control" name="sumber" value="{{$kasus->sumber}}">
+					<button class="btn btn-primary" type="submit">Ganti Sumber</button>
+				</form>
+			</div>
+			<!-- end content-->
+		</div>
 		
 		<div class="card">
 			<div class="card-header card-header-icon" data-background-color="purple">
