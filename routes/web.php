@@ -17,6 +17,7 @@
 Route::get('/', 'Dashboard\DashboardController@index');
 Route::get('/dashboard', 'Dashboard\DashboardController@index');
 Route::get('/dashboard/diagnosis/gejala', 'Dashboard\DashboardController@diagnosisgejala');
+Route::get('/dashboard/dataset/nn', 'Dashboard\DashboardController@datasetNN');
 
 Route::get('/diagnosis', 'Diagnosis\ViewController@index');
 Route::get('/diagnosis/create', 'Diagnosis\ViewController@create');

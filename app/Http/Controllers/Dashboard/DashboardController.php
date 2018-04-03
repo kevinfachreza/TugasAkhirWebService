@@ -31,4 +31,56 @@ class DashboardController extends Controller
 		$data['diagnosis'] = Kasus::all();
 		return view('dashboard.diagnosisgejala',$data);
 	}
+
+	public function datasetNN()
+	{
+
+		$gejala = Gejala::get()->count();
+
+		$kasus = Kasus::all();
+
+		for($i=1;$i<=$gejala;$i++)
+		{
+			print($i);
+			//if($i!=$gejala)
+			echo ",";
+		}
+		echo "diagnosis";
+		echo '<br>';
+
+
+		foreach($kasus as $item)
+		{
+			$gejalas = DiagnosisGejala::where('kasus_id',$item->id)->get()->pluck('gejala_id')->toArray();
+			$i = 0;
+
+			for($i=1;$i<=$gejala;$i++)
+			{
+				if(in_array($i, $gejalas))
+					print ("1");
+				else
+					print ("0");
+
+				//if($i!=$gejala)
+				echo ",";
+			}
+			echo $item->diagnosis_id;
+			/*
+			foreach($item->gejala as $gejala)
+			{
+				$i++;
+				$count = count($item->gejala);
+				print($gejala->gejala_id);
+				if($i!=$count)
+					echo ",";
+
+			}
+			echo '<br>';
+			print_r($gejalas);
+			echo '<br>';
+			*/
+			echo '<br>';
+		}
+
+	}
 }
