@@ -43,3 +43,9 @@ Route::get('/kasus/{id}','Kasus\ViewController@single');
 Route::get('/kasus/{id}/delete','Kasus\PostController@delete');
 Route::post('/kasus/edit/diagnosis','Kasus\PostController@editDiagnosis');
 Route::post('/kasus/edit/sumber','Kasus\PostController@editSumber');
+
+
+Route::get('/app','App\ViewController@index');
+Route::get('/app/result','App\ViewController@result');
+
+Route::post('/api/app/gejala','App\ReadController@getGejala');

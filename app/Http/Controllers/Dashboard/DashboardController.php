@@ -35,7 +35,8 @@ class DashboardController extends Controller
 	public function datasetNN()
 	{
 
-		$gejala = Gejala::get()->count();
+		$gejala = Gejala::latest()->first();
+		$gejala = $gejala->id;
 
 		$kasus = Kasus::all();
 

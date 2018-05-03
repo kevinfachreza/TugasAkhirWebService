@@ -66,7 +66,7 @@
 							@foreach($kasus->gejala as $item)
 							<tr>
 								<td>{{$item->id}}</td>
-								<td>{{$item->gejala->name}}</td>
+								<td>{{$item->gejala->name}}  ({{$item->gejala->id}})</td>
 								<td>-</td>
 								<td class="text-right">
 									<a href="#" class="btn btn-simple btn-danger btn-icon remove"><i class="material-icons">close</i></a>
