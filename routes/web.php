@@ -48,4 +48,4 @@ Route::post('/kasus/edit/sumber','Kasus\PostController@editSumber');
 Route::get('/app','App\ViewController@index');
 Route::get('/app/result','App\ViewController@result');
 
-Route::post('/api/app/gejala','App\ReadController@getGejala');
+Route::post('/api/app/question/next','App\ReadController@getNextQuestion');

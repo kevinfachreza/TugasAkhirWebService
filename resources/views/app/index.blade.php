@@ -45,9 +45,9 @@
 
 
                     <div id="gejala-question" class="text-center"  style="display: none">
-                        <h4>Apakah anda merasakan</h4>
-                        <button class="btn btn-primary">Ya<div class="ripple-container"></div></button>
-                        <button class="btn btn-danger">Tidak<div class="ripple-container"></div></button>
+                        <h4>Apakah anda merasakan <span id="fill-gejala"></span></h4>
+                        <button class="btn btn-primary yes">Ya<div class="ripple-container"></div></button>
+                        <button class="btn btn-danger no">Tidak<div class="ripple-container"></div></button>
                     </div>
 
                 </div>
@@ -72,6 +72,11 @@
     });
 
     $('#gejala-first button').click(function() {
+        //get value
+        var gejalaVal = $('#gejala-first select').val();
+        setGejala(gejalaVal,1);
+
+        //animasi
         $("#gejala-first").fadeOut(500, function(){
             $("#gejala-question").fadeIn(500);
         });
@@ -87,34 +92,63 @@
     var gejalaPasien = new Backbone.Model({
     });
 
-    //SET 
-    gejalaPasien.set("5",1)
+    function setGejala(index,value){
+        //SET 
+        gejalaPasien.set(index,value)
 
-    //FORMATIN MODEL MENJADI MODEL YANG {gejala{"5":1,"9":1}
-    var gejalaPasienJSON = new Backbone.Model({
-        "gejala" : gejalaPasien
-    });
+        //FORMATIN MODEL MENJADI MODEL YANG {gejala{"5":1,"9":1}
+        var gejalaPasienJSON = new Backbone.Model({
+            "gejala" : gejalaPasien
+        });
 
-    //DIUBAH JADI JSON
-    var gejalaPasienJSON = JSON.stringify(gejalaPasienJSON);
-    console.log(gejalaPasienJSON);
+        //DIUBAH JADI JSON
+        var gejalaPasienJSON = JSON.stringify(gejalaPasienJSON);
 
-    $.ajax({
-        type: "POST",
-        url: "http://127.0.0.1:5000/predict",
-        contentType: "application/json",
-        headers: {
-            'Access-Control-Allow-Credentials' : 'true'
-        },
-        data : gejalaPasienJSON,
-        processData: false,
-        success: function (data) {
-            console.log(data);
-        },
-        error: function (e) {
-            console.log(e)
-        }
-    });
+        //KIRIM KE SERVER UNTUK MINTA PERTANYAAN LAIN
+        $.ajax({
+            type: "POST",
+            url: "{{url('api/app/question/next')}}",
+            contentType: "application/json",
+            headers: {
+                'Access-Control-Allow-Credentials' : 'true'
+            },
+            data : gejalaPasienJSON,
+            processData: false,
+            success: function (data) {
+                console.log(data);
+                var obj = JSON.parse(data)
+                console.log(obj.id);
+                $('#gejala-question #fill-gejala').html(obj.name);
+            },
+            error: function (e) {
+                console.log(e)
+            }
+        });
+
+
+
+    }
+
+
+    function submitFinal()
+    {
+        $.ajax({
+            type: "POST",
+            url: "http://127.0.0.1:5000/predict",
+            contentType: "application/json",
+            headers: {
+                'Access-Control-Allow-Credentials' : 'true'
+            },
+            data : gejalaPasienJSON,
+            processData: false,
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (e) {
+                console.log(e)
+            }
+        });
+    }
 
 
 </script>
