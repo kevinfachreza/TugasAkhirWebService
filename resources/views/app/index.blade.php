@@ -44,7 +44,7 @@
                     </div>
 
 
-                    <div id="gejala-question" class="text-center"  style="display: none">
+                    <div id="gejala-question" class="text-center"  style="display: none;min-height: 300px">
                         <h4>Apakah anda merasakan <span id="fill-gejala"></span></h4>
                         <button class="btn btn-primary yes">Ya<div class="ripple-container"></div></button>
                         <button class="btn btn-danger no">Tidak<div class="ripple-container"></div></button>
@@ -82,6 +82,14 @@
         });
     });
 
+    $('#gejala-question .yes').click(function() {
+        setGejala(currentGejala,1);
+
+    });
+    $('#gejala-question .no').click(function() {
+        setGejala(currentGejala,0);
+    });
+
 
 </script>
 
@@ -91,6 +99,7 @@
     //INIT BACKBONE MODEL
     var gejalaPasien = new Backbone.Model({
     });
+    var currentGejala = 0;
 
     function setGejala(index,value){
         //SET 
@@ -117,8 +126,14 @@
             success: function (data) {
                 console.log(data);
                 var obj = JSON.parse(data)
-                console.log(obj.id);
-                $('#gejala-question #fill-gejala').html(obj.name);
+                currentGejala = obj.id
+
+
+                $("#gejala-question").fadeOut(500, function(){
+                    $("#gejala-question").fadeIn(500);
+                    $('#gejala-question #fill-gejala').html(obj.name + obj.id);
+                });
+
             },
             error: function (e) {
                 console.log(e)
