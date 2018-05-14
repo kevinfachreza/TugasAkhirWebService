@@ -18,8 +18,8 @@ Route::get('/', 'Dashboard\DashboardController@index');
 Route::get('/dashboard', 'Dashboard\DashboardController@index');
 Route::get('/dashboard/diagnosis/gejala', 'Dashboard\DashboardController@diagnosisgejala');
 Route::get('/dashboard/diagnosis/gejala/test', 'Dashboard\DashboardController@diagnosisgejalatest');
-Route::get('/dashboard/dataset/training', 'Dashboard\DashboardController@dataTraining');
-Route::get('/dashboard/dataset/testing', 'Dashboard\DashboardController@dataTesting');
+Route::get('/dashboard/dataset/training/{threshold?}', 'Dashboard\DashboardController@dataTraining');
+Route::get('/dashboard/dataset/testing/{threshold?}', 'Dashboard\DashboardController@dataTesting');
 
 Route::get('/diagnosis', 'Diagnosis\ViewController@index');
 Route::get('/diagnosis/create', 'Diagnosis\ViewController@create');

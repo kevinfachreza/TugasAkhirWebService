@@ -38,8 +38,10 @@ class DashboardController extends Controller
 		return view('dashboard.diagnosisgejala',$data);
 	}
 
-	public function dataTraining()
+	public function dataTraining($threshold = 0)
 	{
+
+		$gejala_filtered = $this->getFilteredGejala($threshold);
 
 		$gejala = Gejala::latest()->first();
 		$gejala = $gejala->id;
@@ -48,9 +50,11 @@ class DashboardController extends Controller
 
 		for($i=1;$i<=$gejala;$i++)
 		{
-			print($i);
-			//if($i!=$gejala)
-			echo ",";
+			if(in_array($i, $gejala_filtered))
+			{
+				print($i);
+				echo ",";
+			}
 		}
 		echo "diagnosis";
 		echo '<br>';
@@ -63,13 +67,18 @@ class DashboardController extends Controller
 
 			for($i=1;$i<=$gejala;$i++)
 			{
-				if(in_array($i, $gejalas))
-					print ("1");
-				else
-					print ("0");
+
+				if(in_array($i, $gejala_filtered))
+				{
+
+					if(in_array($i, $gejalas))
+						print ("1");
+					else
+						print ("0");
 
 				//if($i!=$gejala)
-				echo ",";
+					echo ",";
+				}
 			}
 			echo $item->diagnosis->codename;
 			/*
@@ -91,9 +100,10 @@ class DashboardController extends Controller
 
 	}
 
-	public function dataTesting()
+	public function dataTesting($threshold = 0)
 	{
-
+		$gejala_filtered = $this->getFilteredGejala($threshold);
+		
 		$gejala = Gejala::latest()->first();
 		$gejala = $gejala->id;
 
@@ -101,9 +111,11 @@ class DashboardController extends Controller
 
 		for($i=1;$i<=$gejala;$i++)
 		{
-			print($i);
-			//if($i!=$gejala)
-			echo ",";
+			if(in_array($i, $gejala_filtered))
+			{
+				print($i);
+				echo ",";
+			}
 		}
 		echo "diagnosis";
 		echo '<br>';
@@ -116,32 +128,43 @@ class DashboardController extends Controller
 
 			for($i=1;$i<=$gejala;$i++)
 			{
-				if(in_array($i, $gejalas))
-					print ("1");
-				else
-					print ("0");
+
+				if(in_array($i, $gejala_filtered))
+				{
+					
+					if(in_array($i, $gejalas))
+						print ("1");
+					else
+						print ("0");
 
 				//if($i!=$gejala)
-				echo ",";
+					echo ",";
+				}
 			}
 			echo $item->diagnosis->codename;
-			/*
-			foreach($item->gejala as $gejala)
-			{
-				$i++;
-				$count = count($item->gejala);
-				print($gejala->gejala_id);
-				if($i!=$count)
-					echo ",";
-
-			}
-			echo '<br>';
-			print_r($gejalas);
-			echo '<br>';
-			*/
 			echo '<br>';
 		}
 
+	}
+
+	private function getFilteredGejala($threshold)
+	{
+		$gejala_filtered_el = DB::select( "
+			SELECT g.id
+			FROM diagnosis_gejala dg, gejala g, kasus k
+			WHERE dg.gejala_id = g.id
+			AND dg.kasus_id = k.id
+			GROUP BY g.id
+			HAVING COUNT(*) >= ".$threshold.";
+			");
+
+		$gejala_filtered = array();
+		foreach($gejala_filtered_el as $item)
+		{
+			array_push($gejala_filtered, $item->id);		
+		}
+
+		return $gejala_filtered;
 	}
 
 	public function generateCodename()
