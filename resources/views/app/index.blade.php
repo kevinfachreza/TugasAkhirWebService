@@ -19,7 +19,7 @@
                             <div class="col-md-8 col-md-offset-2 col-xs-12">
                                 <input class="form-control" type="text" id="pasien-nama" placeholder="Nama">
                                 <input class="form-control" type="text" id="pasien-usia" placeholder="Usia">
-                                <select class="selectpicker" data-style="btn btn-primary btn-round" title="Single Select" data-width="100%">
+                                <select class="selectpicker" data-style="btn btn-primary btn-round" title="Single Select" data-width="100%" id="pasien-gender">
                                     <option value="1" selected>Laki laki</option>
                                     <option value="2">Perempuan</option>
                                 </select>
@@ -97,17 +97,26 @@
 <script type="text/javascript">
 
     //INIT BACKBONE MODEL
-    var gejalaPasien = new Backbone.Model({
-    });
+    var gejalaPasien = new Backbone.Model({});
     var currentGejala = 0;
+    var count = 0;
 
     function setGejala(index,value){
         //SET 
+        count++
+        console.log(index)
         gejalaPasien.set(index,value)
+        console.log(gejalaPasien)
+        var pasienNama = $('#pasien-nama').val()
+        var pasienUsia = $('#pasien-usia').val()
+        var pasienGender = $('#pasien-gender').val()
 
         //FORMATIN MODEL MENJADI MODEL YANG {gejala{"5":1,"9":1}
         var gejalaPasienJSON = new Backbone.Model({
-            "gejala" : gejalaPasien
+            "gejala" : gejalaPasien,
+            "jenis_kelamin" : pasienGender,
+            "usia" : pasienUsia
+
         });
 
         //DIUBAH JADI JSON
@@ -124,15 +133,45 @@
             data : gejalaPasienJSON,
             processData: false,
             success: function (data) {
-                console.log(data);
+                //console.log(data);
                 var obj = JSON.parse(data)
-                currentGejala = obj.id
+
+                var command = obj.command
+                var gejala = obj.gejala
+                var append = obj.append
+                var append_value = obj.append_value
+
+                currentGejala = gejala.id
 
 
-                $("#gejala-question").fadeOut(500, function(){
-                    $("#gejala-question").fadeIn(500);
-                    $('#gejala-question #fill-gejala').html(obj.name + obj.id);
-                });
+                console.log(count)
+                if(count > 10)
+                {
+                    submitFinal(gejalaPasienJSON);
+                }
+                else
+                { 
+                    if(command === 'ask')
+                    {
+                        console.log('ask')
+                        $("#gejala-question").fadeOut(500, function(){
+                            $("#gejala-question").fadeIn(500);
+                            $('#gejala-question #fill-gejala').html(gejala.name +' - '+ gejala.id);
+                        });
+                    }
+                    else if(command === 'append')
+                    {
+                        console.log('append')
+                        setGejala(append,append_value);
+                    }
+                    else
+                    {
+                        submitFinal(gejalaPasienJSON);
+                    }
+                }
+
+
+
 
             },
             error: function (e) {
@@ -145,7 +184,7 @@
     }
 
 
-    function submitFinal()
+    function submitFinal(gejalaPasienJSON)
     {
         $.ajax({
             type: "POST",
