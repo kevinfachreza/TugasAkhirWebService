@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Rules extends Model
 {
-	protected $table = 'rules_5';
+	protected $table = 'rules_3';
 }

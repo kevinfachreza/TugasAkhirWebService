@@ -29,21 +29,22 @@ class ReadController extends Controller
 		}
 		
 		//cek jika ada batuk
-		if(in_array(10, $arrayGejalaAsked))
+		if(in_array(10, $arrayGejalaAsked) && $gejala['10'] == 1)
 		{
 			$id = 0;
 			if(!in_array(57, $arrayGejalaAsked) && !in_array(66, $arrayGejalaAsked))
 			{
 				$id = 57;
 			}
-			elseif(!empty($gejala['57']) && $gejala['57'] == 0 && !in_array(66, $arrayGejalaAsked))
+			elseif(in_array(57, $arrayGejalaAsked) && $gejala['57'] == 0 && !in_array(66, $arrayGejalaAsked))
 			{
 				$id = 66;
 			}
-			elseif(!empty($gejala['66']) &&  $gejala['66'] == 0 && !in_array(57, $arrayGejalaAsked))
+			elseif(in_array(66, $arrayGejalaAsked) &&  $gejala['66'] == 0 && !in_array(57, $arrayGejalaAsked))
 			{
 				$id = 57;
 			}
+			
 
 			if($id!=0)
 			{
@@ -59,7 +60,7 @@ class ReadController extends Controller
 
 
 		//cek jika demam
-		if(in_array(23, $arrayGejalaAsked))
+		if(in_array(23, $arrayGejalaAsked) && $gejala['23'] == 1)
 		{
 			$id = 0;
 			if(!in_array(41, $arrayGejalaAsked))
@@ -110,6 +111,7 @@ class ReadController extends Controller
 		$command = 'ask';
 		$out = 0;
 		$found = 0;
+		$while_iterate_count = 0;
 
 		while(!$printResult)
 		{	
@@ -121,11 +123,18 @@ class ReadController extends Controller
 			if(!empty($rules[0]))
 			{
 				//MELAKUKAN CEK APAKAH MENANYAKAN PERTANYAAN YANG SUDAH DITANYAKAN
+				if($while_iterate_count > 20)
+				{
+					$printResult = 1;
+					$command = 'out';
+				}
+
 				foreach($rules as $rule)
 				{
-					//cek jika ada rule yang telah ditanyakan
+					//untuk setiap rule hasil query, adakah yang sudah ditanyakan. Jika belum maka...
 					if(!in_array($rule->result, $arrayGejalaAsked))
 					{
+						//berarti ada rule yang belum ditanyakan
 						//jika ada rule yang sudah obvious untuk ditanyakan, maka diolah di sini
 						if(in_array($rule->result, $arrayGejalaSpecial))
 						{
@@ -152,28 +161,59 @@ class ReadController extends Controller
 					}
 					else
 					{
-						//jika ada maka akan di pop dan ditanyakan ulang
-						array_pop($tempArrayGejala);
-						$arrayGejalaSorted = $tempArrayGejala;
-						sort($arrayGejalaSorted);
-						$stringGejalaSorted = implode(",", $arrayGejalaSorted);
+						//jika sudah ditanyakan semua maka akan di pop dan hasil sisa akan di query ulang
+
+						if(count($tempArrayGejala) > 1) //jika tinggal 1 yang belum di pop
+						{
+							$out = 0;
+							array_pop($tempArrayGejala);
+							$arrayGejalaSorted = $tempArrayGejala;
+							sort($arrayGejalaSorted);
+							$stringGejalaSorted = implode(",", $arrayGejalaSorted);
+						}
+						elseif(count($tempArrayGejala) == 1)
+						{
+							/*DONOTHING*/
+							$out=0;
+						}
 					}
 				}
-				if($found != 1) $out = 1;
+				if($found !=1 && count($tempArrayGejala) == 1) $out = 1;
 
-			}
+			} /*END OF IF RULES[0]*/
 			else
 			{
-				array_pop($tempArrayGejala);
-				$arrayGejalaSorted = $tempArrayGejala;
-				sort($arrayGejalaSorted);
-				$stringGejalaSorted = implode(",", $arrayGejalaSorted);
+				if(count($tempArrayGejala) > 1) //jika tinggal 1 yang belum di pop
+				{
+					$out = 0;
+					array_pop($tempArrayGejala);
+					$arrayGejalaSorted = $tempArrayGejala;
+					sort($arrayGejalaSorted);
+					$stringGejalaSorted = implode(",", $arrayGejalaSorted);
+				}
+				elseif(count($tempArrayGejala) == 1)
+				{
+					/*DONOTHING*/
+					$out=0;
+				}
 			}
 			if($out)
 			{
-				$printResult = 1;
-				$command = 'out';
+				if(count($tempArrayGejala) > 1) //jika tinggal 1 yang belum di pop
+				{
+					$out = 0;
+					array_pop($tempArrayGejala);
+					$arrayGejalaSorted = $tempArrayGejala;
+					sort($arrayGejalaSorted);
+					$stringGejalaSorted = implode(",", $arrayGejalaSorted);
+				}
+				elseif(count($tempArrayGejala) == 1)
+				{
+					/*DONOTHING*/
+					$out=0;
+				}
 			}
+			$while_iterate_count++;
 		}
 
 		return json_encode([
@@ -193,7 +233,7 @@ class ReadController extends Controller
 		{
 			$kategori = $this->getKategoriUsia($pasien['usia']);
 			$data['command'] = 'append';
-			$data['append'] = $kategori;
+			$data['append'] = $gejala;
 			if($kategori == $gejala) $data['append_value'] = 1;
 			else $data['append_value'] = 0;
 			$data['gejala'] = 0;

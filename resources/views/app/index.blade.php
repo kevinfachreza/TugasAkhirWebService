@@ -50,6 +50,18 @@
                         <button class="btn btn-danger no">Tidak<div class="ripple-container"></div></button>
                     </div>
 
+                    <div id="diagnosis-warning" class="text-center"  style="display: none;">
+                        <h4>Setelah ini, saya akan memberikan kamu 5 diagnosis penyakit yang mungkin kamu alami</h4>
+                        <p>Ingat diagnosis ini tidak bersifat final, kami rekomendasikan anda menemui dokter untuk mendapatkan kepastian mengenai penyakit yang anda derita.</p>
+                        <button class="btn btn-primary">Selanjutnya<div class="ripple-container"></div></button>
+                    </div>
+
+                    <div id="diagnosis-result" class="row" style="display: none">
+                        <h4 class="text-center ">Penyakit yang mungkin kamu derita</h4>
+                        <div id="result" class="col-md-4 col-md-offset-4">
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -82,6 +94,14 @@
         });
     });
 
+    $('#diagnosis-warning button').click(function() {
+
+        //animasi
+        $("#diagnosis-warning").fadeOut(500, function(){
+            $("#diagnosis-result").fadeIn(500);
+        });
+    });
+
     $('#gejala-question .yes').click(function() {
         setGejala(currentGejala,1);
 
@@ -99,10 +119,15 @@
     //INIT BACKBONE MODEL
     var gejalaPasien = new Backbone.Model({});
     var currentGejala = 0;
+    var count_true = 0;
     var count = 0;
 
     function setGejala(index,value){
         //SET 
+        if(value == 1)
+        {
+            count_true++        
+        }
         count++
         console.log(index)
         gejalaPasien.set(index,value)
@@ -145,7 +170,11 @@
 
 
                 console.log(count)
-                if(count > 10)
+                if(count_true > 10)
+                {
+                    submitFinal(gejalaPasienJSON);
+                }
+                else if(count > 20)
                 {
                     submitFinal(gejalaPasienJSON);
                 }
@@ -166,6 +195,7 @@
                     }
                     else
                     {
+                        console.log(command)
                         submitFinal(gejalaPasienJSON);
                     }
                 }
@@ -175,7 +205,7 @@
 
             },
             error: function (e) {
-                console.log(e)
+                alert(e)
             }
         });
 
@@ -194,12 +224,26 @@
                 'Access-Control-Allow-Credentials' : 'true'
             },
             data : gejalaPasienJSON,
+            dataType : 'json',
             processData: false,
-            success: function (data) {
-                console.log(data);
+            success: function (response) {
+                diagnosis = response.result;
+                console.log(diagnosis);
+                $( "#diagnosis-result #result" ).html('')
+
+                $.each(diagnosis, function(item) {
+                    probability = Number(diagnosis[item].probability * 100).toFixed(2);
+                    result = '<h4 class="title">'+diagnosis[item].diagnosis+'<small>· '+probability+'%</small></h4>'
+
+                    $( "#diagnosis-result #result" ).append( result );
+                })
+
+                $("#gejala-question").fadeOut(500, function(){
+                    $("#diagnosis-warning").fadeIn(500);
+                });
             },
             error: function (e) {
-                console.log(e)
+                alert(e);
             }
         });
     }
